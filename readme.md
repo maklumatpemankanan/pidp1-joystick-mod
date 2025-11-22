@@ -3,6 +3,7 @@ https://github.com/obsolescence/pidp1<br>
 this modification adds 2 9-pin-joystick (like from the atari 2600 or c64) to the pidp1 over wifi.<br>
 <br>
 Its a quick and dirty mod, but it works (2025 11 22)<br>
+The modification is tested on ubuntu 24.04LTS, with a clean install of the pidp1-software
 
 ******************************************
 
