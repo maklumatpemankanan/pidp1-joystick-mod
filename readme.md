@@ -90,6 +90,7 @@ the esp32 only connects to the pidp1 when the pidp1 is in run-state, the power s
 <br>
 don't power off the esp32 when the socket is connected with the pidp1 - this freezes the pidp1!<br>
 <br>
+the joystick_test.ino is for debugging and displays only data in the serial monitor<br>
 ***********************************<br>
 Test Program<br>
 ***********************************<br>
