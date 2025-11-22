@@ -1,6 +1,6 @@
 This is a modification of the pidp1 software from oscar vermeulen:
 https://github.com/obsolescence/pidp1
-this modification adds 2 9-pin-joystick (linke from the atari 2600 or c64) to the pidp1 over wifi.
+this modification adds 2 9-pin-joystick (like from the atari 2600 or c64) to the pidp1 over wifi.
 
 Its a quick and dirty mod, but it works (2025 11 22)
 
