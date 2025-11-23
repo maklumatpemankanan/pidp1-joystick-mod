@@ -11,32 +11,34 @@ Install joystick-modification <br>
 
 make a new folder in /opt as root<br>
 
->sudo mkdir /opt/pidp1-joystick<br>
+> sudo mkdir /opt/pidp1-joystick<br>
 
 change owner of the directory manually<br>
 
->sudo chown $USER:$USER /opt/pidp1-joystick
+> sudo chown $USER:$USER /opt/pidp1-joystick
 
 copy all data from your origin pidp1 directory into the new directory,
 you can do this in the file browser or in the terminal :<br>
->cp -r /opt/pidp1/* /opt/pidp1-joystick/<br>
+> cp -r /opt/pidp1/* /opt/pidp1-joystick/<br>
 <br>
 backup the following files :<br>
-<br>
->/opt/pidp1-joystick/src/blncolnlights/pdp1/Makefile<br>
->/opt/pidp1-joystick/src/blncolnlights/pdp1/main.c<br>
->/opt/pidp1-joystick/src/blncolnlights/pdp1/pdp1.c<br>
->/opt/pidp1-joystick/src/blncolnlights/pdp1/pdp1.h<br>
->/opt/pidp1-joystick/bin/pdp1control.sh<br>
+
+> /opt/pidp1-joystick/src/blncolnlights/pdp1/Makefile<br>
+> /opt/pidp1-joystick/src/blncolnlights/pdp1/main.c<br>
+> /opt/pidp1-joystick/src/blncolnlights/pdp1/pdp1.c<br>
+> /opt/pidp1-joystick/src/blncolnlights/pdp1/pdp1.h<br>
+> /opt/pidp1-joystick/bin/pdp1control.sh<br>
 <br>
 copy the new files to the right directorys<br>
 the folder structure in the repository is the same like in the destination-folder<br>
 <br>
 enter the directory on the terminal<br>
->cd /opt/pidp1-joystick/src/blincolnlights/pdp1<br>
+
+> cd /opt/pidp1-joystick/src/blincolnlights/pdp1<br>
 <br>
 and make the emulator with the new joystick implementation<br>
->make pdp1<br>
+
+> make pdp1<br>
 <br>
 now you can turn on your esp32 and when the esp32 is connected to the pdp1-simulator<br>
 and you call iot 15 the bits of the joystick appears in the io register.<br>
@@ -54,7 +56,9 @@ bit 11 = Joystick B right<br>
 bit 12 = Joystick B button<br>
 <br>
 you can start your modded pidp1 simulator from the terminal <br>
+
 >/opt/pidp1-joystick/bin/pdp1control.sh start <br>
+
 <br>
 you must call the pdp1control with the full path to start with the modded configuration (in these case with joystick support)<br>
 <br>
