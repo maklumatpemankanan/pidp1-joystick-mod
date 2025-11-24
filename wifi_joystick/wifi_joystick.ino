@@ -44,7 +44,7 @@ void setup() {
   Serial.println("\nWiFi connected");
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
-  
+  joystick_init();  
   // Connect to PDP-1
   connectToPDP1();
 }

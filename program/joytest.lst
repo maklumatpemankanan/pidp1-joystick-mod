@@ -1,0 +1,38 @@
+
+      joytest                                                             Page 1
+
+
+    1                   joytest
+    2                   
+    3                   /joystick test program
+    4                   
+    5 00010             10/
+    6                   
+    7                   loop,	/increment counter
+    8 00010 200023      	lac count
+    9 00011 400024      	add one
+   10 00012 240023      	dac count
+   11                   	
+   12                   	/check if counter reached threshold
+   13 00013 500025      	sad thresh
+   14 00014 600016      	jmp rdstk
+   15 00015 600010      	jmp loop
+   16                   	
+   17                   rdstk,	/reset counter
+   18 00016 760200      	cla
+   19 00017 240023      	dac count
+   20                   	
+   21                   	/read joystick
+   22 00020 720015      	iot 15
+   23 00021 600010      	jmp loop
+   24 00022 760400      hlt
+   25                   
+   26                   /variables
+   27 00023 000000      count,	0
+   28 00024 000001      one,	1
+   29 00025 006000      thresh,	6000
+   30                   
+   31       000010      start loop
+   32                   
+
+      No errors detected

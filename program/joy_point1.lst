@@ -1,0 +1,129 @@
+
+      point                                                               Page 1
+
+
+    1                   point
+    2                   
+    3                   / joystick controlled point display
+    4 00400             400/
+    5 00400 760200      main,	cla			/ clear accumulator
+    6 00401 240511      	dac xcoord		/ initialize x=0
+    7 00402 240512      	dac ycoord		/ initialize y=0
+    8                   
+    9                   loop,	/ draw point with current coordinates
+   10 00403 200511      	lac xcoord		/ load x coordinate to AC
+   11 00404 220512      	lio ycoord		/ load y coordinate to IO
+   12 00405 730007      	dpy			/ display point at (x, y)
+   13                   	
+   14                   	/ increment counter
+   15 00406 200514      	lac count		/ load counter
+   16 00407 400515      	add one			/ increment by 1
+   17 00410 240514      	dac count		/ save counter
+   18                   	
+   19                   	/ check if counter reached threshold
+   20 00411 500517      	sad thresh		/ skip if different from threshold
+   21 00412 600414      	jmp rdstck		/ counter reached, read joystick
+   22 00413 600403      	jmp loop		/ not yet, continue drawing
+   23                   	
+   24                   rdstck,	/ reset counter
+   25 00414 760200      	cla			/ clear accumulator
+   26 00415 240514      	dac count		/ reset counter to 0
+   27                   	
+   28                   	/ read joystick
+   29 00416 720015      	iot 15			/ read joystick (device 15)
+   30 00417 320513      	dio temp		/ save IO value
+   31                   	
+   32                   	/ test bit 0 - joystick up (increment y)
+   33 00420 200513      	lac temp		/ load joystick value
+   34 00421 020522      	and bit0		/ mask bit 0
+   35 00422 640100      	sza			/ skip if zero (bit not set)
+   36 00423 600477      	jmp incy		/ bit set, increment y
+   37                   	
+   38 00424 200513      chkdn,	lac temp		/ reload joystick value
+   39 00425 020523      	and bit1		/ mask bit 1 - joystick down
+   40 00426 640100      	sza			/ skip if zero
+   41 00427 600465      	jmp decy		/ decrement y
+   42                   	
+   43 00430 200513      chklf,	lac temp		/ reload joystick value
+   44 00431 020524      	and bit2		/ mask bit 2 - joystick left
+   45 00432 640100      	sza			/ skip if zero
+   46 00433 600453      	jmp decx		/ decrement x
+   47                   	
+   48 00434 200513      chkrt,	lac temp		/ reload joystick value
+   49 00435 020525      	and bit3		/ mask bit 3 - joystick right
+   50 00436 640100      	sza			/ skip if zero
+   51 00437 600441      	jmp incx		/ increment x
+   52 00440 600403      	jmp loop		/ no input, back to main loop
+   53                   	
+   54 00441 200511      incx,	lac xcoord		/ load x coordinate
+   55 00442 400516      	add ten			/ increment by 10
+   56 00443 240511      	dac xcoord		/ save new x
+   57 00444 500520      	sad maxval		/ skip if different from max (511)
+
+      point                                                               Page 2
+
+
+   58 00445 600450      	jmp wrapxn		/ at max, wrap to min
+   59 00446 640400      	sma			/ skip if minus (overflow check)
+   60 00447 600403      	jmp loop		/ positive, ok
+   61 00450 200521      wrapxn,	lac minval		/ load min value (-512)
+   62 00451 240511      	dac xcoord		/ wrap to minimum
+   63 00452 600403      	jmp loop		/ done, back to main loop
+   64                   	
+   65 00453 200511      decx,	lac xcoord		/ load x coordinate
+   66 00454 420516      	sub ten			/ decrement by 10
+   67 00455 240511      	dac xcoord		/ save new x
+   68 00456 500521      	sad minval		/ skip if different from min (-512)
+   69 00457 600462      	jmp wrapxp		/ at min, wrap to max
+   70 00460 640200      	spa			/ skip if plus (underflow check)
+   71 00461 600403      	jmp loop		/ negative, ok
+   72 00462 200520      wrapxp,	lac maxval		/ load max value (511)
+   73 00463 240511      	dac xcoord		/ wrap to maximum
+   74 00464 600403      	jmp loop		/ done, back to main loop
+   75                   	
+   76 00465 200512      decy,	lac ycoord		/ load y coordinate
+   77 00466 420516      	sub ten			/ decrement by 10
+   78 00467 240512      	dac ycoord		/ save new y
+   79 00470 500521      	sad minval		/ skip if different from min (-512)
+   80 00471 600474      	jmp wrapyp		/ at min, wrap to max
+   81 00472 640200      	spa			/ skip if plus (underflow check)
+   82 00473 600403      	jmp loop		/ negative, ok
+   83 00474 200520      wrapyp,	lac maxval		/ load max value (511)
+   84 00475 240512      	dac ycoord		/ wrap to maximum
+   85 00476 600403      	jmp loop		/ done, back to main loop
+   86                   	
+   87 00477 200512      incy,	lac ycoord		/ load y coordinate
+   88 00500 400516      	add ten			/ increment by 10
+   89 00501 240512      	dac ycoord		/ save new y
+   90 00502 500520      	sad maxval		/ skip if different from max (511)
+   91 00503 600506      	jmp wrapyn		/ at max, wrap to min
+   92 00504 640400      	sma			/ skip if minus (overflow check)
+   93 00505 600403      	jmp loop		/ positive, ok
+   94 00506 200521      wrapyn,	lac minval		/ load min value (-512)
+   95 00507 240512      	dac ycoord		/ wrap to minimum
+   96 00510 600403      	jmp loop		/ back to main loop
+   97                   
+   98                   / data storage
+   99 00511 000000      xcoord,	0			/ x coordinate storage
+  100 00512 000000      ycoord,	0			/ y coordinate storage
+  101 00513 000000      temp,	0			/ temporary storage
+  102 00514 000000      count,	0			/ frame counter for throttling IOT
+  103 00515 000001      one,	1			/ constant 1
+  104 00516 001130      ten,	1130			/ constant 10 (octal 12 = decimal 10)
+  105 00517 006000      thresh,	6000			/ threshold for IOT read (octal 1000 = 512 decimal)
+  106 00520 000777      maxval,	777			/ max coordinate value (+511 decimal)
+  107 00521 777000      minval,	777000			/ min coordinate value (-512 decimal, 1's complement)
+  108                   
+  109                   / bit masks for joystick testing
+  110 00522 000001      bit0,	000001			/ bit 0 mask (octal)
+  111 00523 000002      bit1,	000002			/ bit 1 mask
+  112 00524 000004      bit2,	000004			/ bit 2 mask
+  113 00525 000010      bit3,	000010			/ bit 3 mask
+  114                   
+
+      point                                                               Page 3
+
+
+  115       000400      start main
+
+      No errors detected

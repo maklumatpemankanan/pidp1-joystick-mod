@@ -1,0 +1,115 @@
+point
+
+/ joystick controlled point display
+400/
+main,	cla			/ clear accumulator
+	dac xcoord		/ initialize x=0
+	dac ycoord		/ initialize y=0
+
+loop,	/ draw point with current coordinates
+	lac xcoord		/ load x coordinate to AC
+	lio ycoord		/ load y coordinate to IO
+	dpy			/ display point at (x, y)
+	
+	/ increment counter
+	lac count		/ load counter
+	add one			/ increment by 1
+	dac count		/ save counter
+	
+	/ check if counter reached threshold
+	sad thresh		/ skip if different from threshold
+	jmp rdstck		/ counter reached, read joystick
+	jmp loop		/ not yet, continue drawing
+	
+rdstck,	/ reset counter
+	cla			/ clear accumulator
+	dac count		/ reset counter to 0
+	
+	/ read joystick
+	iot 15			/ read joystick (device 15)
+	dio temp		/ save IO value
+	
+	/ test bit 0 - joystick up (increment y)
+	lac temp		/ load joystick value
+	and bit0		/ mask bit 0
+	sza			/ skip if zero (bit not set)
+	jmp incy		/ bit set, increment y
+	
+chkdn,	lac temp		/ reload joystick value
+	and bit1		/ mask bit 1 - joystick down
+	sza			/ skip if zero
+	jmp decy		/ decrement y
+	
+chklf,	lac temp		/ reload joystick value
+	and bit2		/ mask bit 2 - joystick left
+	sza			/ skip if zero
+	jmp decx		/ decrement x
+	
+chkrt,	lac temp		/ reload joystick value
+	and bit3		/ mask bit 3 - joystick right
+	sza			/ skip if zero
+	jmp incx		/ increment x
+	jmp loop		/ no input, back to main loop
+	
+incx,	lac xcoord		/ load x coordinate
+	add ten			/ increment by 10
+	dac xcoord		/ save new x
+	sad maxval		/ skip if different from max (511)
+	jmp wrapxn		/ at max, wrap to min
+	sma			/ skip if minus (overflow check)
+	jmp loop		/ positive, ok
+wrapxn,	lac minval		/ load min value (-512)
+	dac xcoord		/ wrap to minimum
+	jmp loop		/ done, back to main loop
+	
+decx,	lac xcoord		/ load x coordinate
+	sub ten			/ decrement by 10
+	dac xcoord		/ save new x
+	sad minval		/ skip if different from min (-512)
+	jmp wrapxp		/ at min, wrap to max
+	spa			/ skip if plus (underflow check)
+	jmp loop		/ negative, ok
+wrapxp,	lac maxval		/ load max value (511)
+	dac xcoord		/ wrap to maximum
+	jmp loop		/ done, back to main loop
+	
+decy,	lac ycoord		/ load y coordinate
+	sub ten			/ decrement by 10
+	dac ycoord		/ save new y
+	sad minval		/ skip if different from min (-512)
+	jmp wrapyp		/ at min, wrap to max
+	spa			/ skip if plus (underflow check)
+	jmp loop		/ negative, ok
+wrapyp,	lac maxval		/ load max value (511)
+	dac ycoord		/ wrap to maximum
+	jmp loop		/ done, back to main loop
+	
+incy,	lac ycoord		/ load y coordinate
+	add ten			/ increment by 10
+	dac ycoord		/ save new y
+	sad maxval		/ skip if different from max (511)
+	jmp wrapyn		/ at max, wrap to min
+	sma			/ skip if minus (overflow check)
+	jmp loop		/ positive, ok
+wrapyn,	lac minval		/ load min value (-512)
+	dac ycoord		/ wrap to minimum
+	jmp loop		/ back to main loop
+
+/ data storage
+xcoord,	0			/ x coordinate storage
+ycoord,	0			/ y coordinate storage
+temp,	0			/ temporary storage
+count,	0			/ frame counter for throttling IOT
+one,	1			/ constant 1
+ten,	1130			/ constant 10 (octal 12 = decimal 10)
+thresh,	6000			/ threshold for IOT read (octal 1000 = 512 decimal)
+maxval,	777			/ max coordinate value (+511 decimal)
+minval,	777000			/ min coordinate value (-512 decimal, 1's complement)
+
+/ bit masks for joystick testing
+bit0,	000001			/ bit 0 mask (octal)
+bit1,	000002			/ bit 1 mask
+bit2,	000004			/ bit 2 mask
+bit3,	000010			/ bit 3 mask
+
+start main

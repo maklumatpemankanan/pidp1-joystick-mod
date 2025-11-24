@@ -1,0 +1,32 @@
+joytest
+
+/joystick test program
+
+10/
+
+loop,	/increment counter
+	lac count
+	add one
+	dac count
+	
+	/check if counter reached threshold
+	sad thresh
+	jmp rdstk
+	jmp loop
+	
+rdstk,	/reset counter
+	cla
+	dac count
+	
+	/read joystick
+	iot 15
+	jmp loop
+hlt
+
+/variables
+count,	0
+one,	1
+thresh,	6000
+
+start loop
+
